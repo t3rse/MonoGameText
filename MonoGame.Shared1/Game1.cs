@@ -1,12 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System.Net.Http;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿#region Using Statements
+using System;
 
-namespace TextureImages
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.Input;
+
+#endregion
+
+namespace MonoGame.Shared1
 {
     /// <summary>
     /// This is the main type for your game.
@@ -16,12 +18,11 @@ namespace TextureImages
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Texture2D imageTexture;
-        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.IsFullScreen = true;
         }
 
         /// <summary>
@@ -30,28 +31,10 @@ namespace TextureImages
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
-        protected override async void Initialize()
+        protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
             base.Initialize();
-
-            // TODO: use this.Content to load your game content here
-            using (var client = new HttpClient())
-            {
-                using (var response = await client
-                                                 .GetAsync("https://images.hanselminutes.com/images/646.jpg",
-                                                    HttpCompletionOption.ResponseContentRead)
-                                                 .ConfigureAwait(false))
-                {
-                    var result = await response.Content.ReadAsByteArrayAsync();
-
-                    var memStream = new MemoryStream(result);
-                    imageTexture = Texture2D.FromStream(GraphicsDevice, memStream);
-                }
-            }
-
-
         }
 
         /// <summary>
@@ -63,17 +46,7 @@ namespace TextureImages
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-
-
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
+            //TODO: use this.Content to load your game content here 
         }
 
         /// <summary>
@@ -83,11 +56,16 @@ namespace TextureImages
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            // For Mobile devices, this logic will close the Game when the Back button is pressed
+            // Exit() is obsolete on iOS
+#if !__IOS__ && !__TVOS__
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
-
-            // TODO: Add your update logic here
-
+            }
+#endif
+            // TODO: Add your update logic here			
             base.Update(gameTime);
         }
 
@@ -99,13 +77,7 @@ namespace TextureImages
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
- 
-            if(imageTexture != null) { 
-                spriteBatch.Begin();
-                spriteBatch.Draw(imageTexture, new Vector2(10, 10), Color.AliceBlue);
-                spriteBatch.End();
-            }
+            //TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

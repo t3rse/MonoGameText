@@ -1,12 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Net.Http;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace TextureImages
+namespace RectangleGame
 {
     /// <summary>
     /// This is the main type for your game.
@@ -15,9 +11,9 @@ namespace TextureImages
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        Rectangle rectangle;
         Texture2D imageTexture;
-        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -30,28 +26,11 @@ namespace TextureImages
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
-        protected override async void Initialize()
+        protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
             base.Initialize();
-
-            // TODO: use this.Content to load your game content here
-            using (var client = new HttpClient())
-            {
-                using (var response = await client
-                                                 .GetAsync("https://images.hanselminutes.com/images/646.jpg",
-                                                    HttpCompletionOption.ResponseContentRead)
-                                                 .ConfigureAwait(false))
-                {
-                    var result = await response.Content.ReadAsByteArrayAsync();
-
-                    var memStream = new MemoryStream(result);
-                    imageTexture = Texture2D.FromStream(GraphicsDevice, memStream);
-                }
-            }
-
-
         }
 
         /// <summary>
@@ -63,6 +42,10 @@ namespace TextureImages
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            imageTexture = Content.Load<Texture2D>("StormTrooper");
+
+            // TODO: use this.Content to load your game content here
+            rectangle = new Rectangle(new Point(30, 40), new Point(100, 100));
 
 
         }
@@ -100,12 +83,11 @@ namespace TextureImages
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
- 
-            if(imageTexture != null) { 
-                spriteBatch.Begin();
-                spriteBatch.Draw(imageTexture, new Vector2(10, 10), Color.AliceBlue);
-                spriteBatch.End();
-            }
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(imageTexture, rectangle, Color.Yellow);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
